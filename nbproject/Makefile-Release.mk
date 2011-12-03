@@ -36,8 +36,8 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 OBJECTFILES= \
 	${OBJECTDIR}/Attributes.o \
 	${OBJECTDIR}/fuser.o \
-	${OBJECTDIR}/DFuser.o \
 	${OBJECTDIR}/dfuser.o \
+	${OBJECTDIR}/DFuser.o \
 	${OBJECTDIR}/Repository.o \
 	${OBJECTDIR}/Logger.o
 
@@ -76,15 +76,15 @@ ${OBJECTDIR}/fuser.o: fuser.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -O2 `pkg-config --cflags fuse`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/fuser.o fuser.cpp
 
-${OBJECTDIR}/DFuser.o: DFuser.cpp 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.cc) -O2 `pkg-config --cflags fuse`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/DFuser.o DFuser.cpp
-
 ${OBJECTDIR}/dfuser.o: dfuser.c 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.c) -O2 `pkg-config --cflags fuse`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/dfuser.o dfuser.c
+
+${OBJECTDIR}/DFuser.o: DFuser.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -O2 `pkg-config --cflags fuse`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/DFuser.o DFuser.cpp
 
 ${OBJECTDIR}/Repository.o: Repository.cpp 
 	${MKDIR} -p ${OBJECTDIR}
