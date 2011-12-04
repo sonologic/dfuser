@@ -21,7 +21,7 @@ FC=gfortran
 AS=as
 
 # Macros
-CND_PLATFORM=GNU-Linux-x86
+CND_PLATFORM=GNU-MacOSX
 CND_CONF=Release
 CND_DISTDIR=dist
 CND_BUILDDIR=build
@@ -64,7 +64,7 @@ LDLIBSOPTIONS=`pkg-config --libs fuse`
 
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/dfuser: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
-	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/dfuser -s ${OBJECTFILES} ${LDLIBSOPTIONS} 
+	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/dfuser -Wl,-S ${OBJECTFILES} ${LDLIBSOPTIONS} 
 
 ${OBJECTDIR}/Attributes.o: Attributes.cpp 
 	${MKDIR} -p ${OBJECTDIR}

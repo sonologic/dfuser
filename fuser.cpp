@@ -14,7 +14,10 @@
  *     You should have received a copy of the GNU General Public License
  *     along with dfuser.  If not, see <http://www.gnu.org/licenses/>.
  */
-         
+   
+#define FUSE_USE_VERSION 25
+#define _FILE_OFFSET_BITS 64
+
 #include <fuse.h>
 #include <fuse/fuse_opt.h>
 #include <stdio.h>
