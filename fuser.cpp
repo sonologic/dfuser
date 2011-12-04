@@ -28,12 +28,12 @@
 #include <fcntl.h>
 #include <dirent.h>
 #include "fuser.h"
-#include "DFuser.h"
+#include "FuseOps.h"
 
 static const char *dfuser_str = "Distributed FUSE replicator\n";
 static const char *dfuser_path = "/dfuser";
 
-static DFuser *dfuser;
+static FuseOps *dfuser;
 
 int dfuser_main(const char *path) {
     static Repository *repo;
@@ -41,7 +41,7 @@ int dfuser_main(const char *path) {
     
     repo=new Repository(path);
     
-    dfuser=new DFuser(repo,logger);
+    dfuser=new FuseOps(repo,logger);
     
     return 0;
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configurationDescriptor version="79">
+<configurationDescriptor version="80">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
@@ -14,8 +14,9 @@
                    projectFiles="true">
       <itemPath>Attributes.cpp</itemPath>
       <itemPath>Attributes.h</itemPath>
-      <itemPath>DFuser.cpp</itemPath>
-      <itemPath>DFuser.h</itemPath>
+      <itemPath>FuseOps.cpp</itemPath>
+      <itemPath>FuseOps.h</itemPath>
+      <itemPath>LICENSE</itemPath>
       <itemPath>Logger.cpp</itemPath>
       <itemPath>Logger.h</itemPath>
       <itemPath>Repository.cpp</itemPath>

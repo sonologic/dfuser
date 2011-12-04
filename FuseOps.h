@@ -29,11 +29,11 @@
 #include "Repository.h"
 #include "Logger.h"
 
-class DFuser {
+class FuseOps {
 public:
-    DFuser(Repository *,Logger *);
-    DFuser(const DFuser& orig);
-    virtual ~DFuser();
+    FuseOps(Repository *,Logger *);
+    FuseOps(const FuseOps& orig);
+    virtual ~FuseOps();
     int getattr(const char *path, struct stat *stbuf);
     int readdir(const char *path, void *buf, fuse_fill_dir_t filler,
                          off_t offset, struct fuse_file_info *fi);

@@ -23,20 +23,20 @@
 
 #include <errno.h>
 #include <string.h>
-#include "DFuser.h"
+#include "FuseOps.h"
 
-DFuser::DFuser(Repository *r,Logger *l) {
+FuseOps::FuseOps(Repository *r,Logger *l) {
     repo = r;
     log = l;
 }
 
-DFuser::DFuser(const DFuser& orig) {
+FuseOps::FuseOps(const FuseOps& orig) {
 }
 
-DFuser::~DFuser() {
+FuseOps::~FuseOps() {
 }
 
-int DFuser::getattr(const char *path, struct stat *stbuf) {
+int FuseOps::getattr(const char *path, struct stat *stbuf) {
     int res=0;
     Attributes attr;
     
@@ -60,24 +60,24 @@ int DFuser::getattr(const char *path, struct stat *stbuf) {
     return res;
 }
 
-int DFuser::readdir(const char *path, void *buf, fuse_fill_dir_t filler,
+int FuseOps::readdir(const char *path, void *buf, fuse_fill_dir_t filler,
         off_t offset, struct fuse_file_info *fi) {
     log->notice("readdir %s\n",path);
     return -ENOENT;
 }
 
-int DFuser::open(const char *path, struct fuse_file_info *fi) {
+int FuseOps::open(const char *path, struct fuse_file_info *fi) {
     log->notice("open %s\n",path);
     return -ENOENT;
 }
 
-int DFuser::read(const char *path, char *buf, size_t size, off_t offset,
+int FuseOps::read(const char *path, char *buf, size_t size, off_t offset,
         struct fuse_file_info *fi) {
     log->notice("read %s\n",path);
     return -ENOENT;
 }
 
-int DFuser::write(const char *path, const char *buf, size_t size,
+int FuseOps::write(const char *path, const char *buf, size_t size,
         off_t offset, struct fuse_file_info *fi) {
     log->notice("write %s\n",path);
     return -ENOENT;

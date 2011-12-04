@@ -21,7 +21,7 @@ FC=gfortran
 AS=as
 
 # Macros
-CND_PLATFORM=GNU-MacOSX
+CND_PLATFORM=GNU-Linux-x86
 CND_CONF=Release
 CND_DISTDIR=dist
 CND_BUILDDIR=build
@@ -34,10 +34,10 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/FuseOps.o \
 	${OBJECTDIR}/Attributes.o \
 	${OBJECTDIR}/fuser.o \
 	${OBJECTDIR}/dfuser.o \
-	${OBJECTDIR}/DFuser.o \
 	${OBJECTDIR}/Repository.o \
 	${OBJECTDIR}/Logger.o
 
@@ -64,7 +64,12 @@ LDLIBSOPTIONS=`pkg-config --libs fuse`
 
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/dfuser: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
-	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/dfuser -Wl,-S ${OBJECTFILES} ${LDLIBSOPTIONS} 
+	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/dfuser -s ${OBJECTFILES} ${LDLIBSOPTIONS} 
+
+${OBJECTDIR}/FuseOps.o: FuseOps.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -O2 `pkg-config --cflags fuse`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/FuseOps.o FuseOps.cpp
 
 ${OBJECTDIR}/Attributes.o: Attributes.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -80,11 +85,6 @@ ${OBJECTDIR}/dfuser.o: dfuser.c
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.c) -O2 `pkg-config --cflags fuse`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/dfuser.o dfuser.c
-
-${OBJECTDIR}/DFuser.o: DFuser.cpp 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.cc) -O2 `pkg-config --cflags fuse`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/DFuser.o DFuser.cpp
 
 ${OBJECTDIR}/Repository.o: Repository.cpp 
 	${MKDIR} -p ${OBJECTDIR}

@@ -21,7 +21,7 @@ FC=gfortran
 AS=as
 
 # Macros
-CND_PLATFORM=GNU-MacOSX
+CND_PLATFORM=GNU-Linux-x86
 CND_CONF=Debug
 CND_DISTDIR=dist
 CND_BUILDDIR=build
@@ -34,10 +34,10 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/FuseOps.o \
 	${OBJECTDIR}/Attributes.o \
 	${OBJECTDIR}/fuser.o \
 	${OBJECTDIR}/dfuser.o \
-	${OBJECTDIR}/DFuser.o \
 	${OBJECTDIR}/Repository.o \
 	${OBJECTDIR}/Logger.o
 
@@ -66,6 +66,11 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/dfuser: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/dfuser ${OBJECTFILES} ${LDLIBSOPTIONS} 
 
+${OBJECTDIR}/FuseOps.o: FuseOps.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -g -I. `pkg-config --cflags fuse`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/FuseOps.o FuseOps.cpp
+
 test.sh: test.bash 
 	@echo Performing Custom Build Step
 	cp test.bash test.sh
@@ -84,11 +89,6 @@ ${OBJECTDIR}/dfuser.o: dfuser.c
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.c) -g -I. `pkg-config --cflags fuse`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/dfuser.o dfuser.c
-
-${OBJECTDIR}/DFuser.o: DFuser.cpp 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.cc) -g -I. `pkg-config --cflags fuse`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/DFuser.o DFuser.cpp
 
 ${OBJECTDIR}/Repository.o: Repository.cpp 
 	${MKDIR} -p ${OBJECTDIR}
