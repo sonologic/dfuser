@@ -1,8 +1,8 @@
 /* 
- * File:   repo.h
+ * File:   FileHandle.h
  * Author: gmc
  *
- * Created on 03 December 2011, 01:48
+ * Created on 04 December 2011, 23:53
  * 
  *     This file is part of dfuser.
  * 
@@ -18,37 +18,24 @@
  * 
  *     You should have received a copy of the GNU General Public License
  *     along with dfuser.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 
-#ifndef REPO_H
-#define	REPO_H
+#ifndef FILEHANDLE_H
+#define	FILEHANDLE_H
 
-#include "Attributes.h"
-#include "Logger.h"
-
-typedef void *repodir;
-
-class Repository {
+class FileHandle {
 public:
-    Repository(const char * path /* = 0 */);
-    Repository(const Repository& orig);
-    virtual ~Repository();
-    int getAttributes(const char *path,Attributes *attr);
-    int openPath(const char *path,int mode);
-    int closePath(const char *path);
-    repodir openDir(const char *path);
-    char *readDir(repodir dir);
-    void closeDir(repodir dir);
-    void setLogger(Logger *l);
+    FileHandle();
+    FileHandle(const FileHandle& orig);
+    virtual ~FileHandle();
+    int read(size_t ofs,size_t len,void *buf);
+    int write(size_t ofs,size_t len,void *buf);
+    int truncate();
 private:
-    int checkPath(const char *path);
-    int checkPath(const char *path,const char *sub);
-    char *prependFsPath(const char *path);
-    //
-    char *path;
-    Logger *log;
+    uint64_t fh;        // fuse handle
+    FILE *fp;           // pointer to underlying file
 };
 
-#endif	/* REPO_H */
+#endif	/* FILEHANDLE_H */
 

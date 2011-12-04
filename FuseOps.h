@@ -26,6 +26,7 @@
 
 #include <fuse.h>
 #include <stdio.h>
+#include <malloc.h>
 #include "Repository.h"
 #include "Logger.h"
 

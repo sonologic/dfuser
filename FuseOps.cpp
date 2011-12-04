@@ -44,10 +44,11 @@ int FuseOps::getattr(const char *path, struct stat *stbuf) {
     memset(stbuf, 0, sizeof(struct stat));
     
     if(repo->getAttributes(path,&attr)) {
-        return errno;
+        return -errno;
     } else {
-        stbuf->st_mode = attr.attr.st_mode;
-        stbuf->st_nlink = attr.attr.st_nlink;
+        memcpy(stbuf,&(attr.attr),sizeof(struct stat));
+        //stbuf->st_mode = attr.attr.st_mode;
+        //stbuf->st_nlink = attr.attr.st_nlink;
     }
     /*else if(strcmp(path, dfuser_path) == 0) {
         stbuf->st_mode = S_IFREG | 0444;
@@ -62,7 +63,22 @@ int FuseOps::getattr(const char *path, struct stat *stbuf) {
 
 int FuseOps::readdir(const char *path, void *buf, fuse_fill_dir_t filler,
         off_t offset, struct fuse_file_info *fi) {
+    repodir dh;
+    
     log->notice("readdir %s\n",path);
+    
+    dh=repo->openDir(path);
+    
+    if(dh!=NULL) {
+        char *entry;
+        
+        while((entry=repo->readDir(dh))) {
+            filler(buf, entry, NULL, 0);
+            free(entry);
+        }
+        return 0;
+    }
+    
     return -ENOENT;
 }
 

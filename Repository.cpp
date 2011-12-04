@@ -29,55 +29,125 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include <string.h>
+#include <dirent.h>
 #include "Repository.h"
 
-Repository::Repository(const char * path /* = 0 */) {
-    checkPath(path);
-    checkPath(path,"/fs");
-    checkPath(path,"/meta");
+Repository::Repository(const char * p /* = 0 */) {
+    checkPath(p);
+    checkPath(p, "/fs");
+    checkPath(p, "/meta");
+    path = strdup(p);
 }
 
 Repository::Repository(const Repository& orig) {
 }
 
 Repository::~Repository() {
+    free(path);
+}
+
+void Repository::setLogger(Logger *l) {
+    log = l;
+}
+
+char *Repository::prependFsPath(const char *p) {
+    char *newpath;
+    size_t size;
+
+    size = strlen(path) + strlen(p)+((p[0] == '/') ? 0 : 1) + 3;
+
+    newpath = (char*) malloc(size);
+
+    if (newpath != NULL) {
+        strcpy(newpath, path);
+        strcat(newpath, "/fs");
+        if (p[0] != '/') strcat(newpath, "/");
+        strcat(newpath, p);
+    }
+
+    return newpath;
 }
 
 int Repository::checkPath(const char *path) {
     struct stat info;
-    
-    if(stat(path,&info)) {
+
+    if (stat(path, &info)) {
         // stat failed
-        if(errno!=ENOENT) {
-            fprintf(stderr,"Unable to open repository: %s\n",strerror(errno));
+        if (errno != ENOENT) {
+            fprintf(stderr, "Unable to open repository: %s\n", strerror(errno));
             throw errno;
         }
-        if(mkdir(path,0700)) {
-            fprintf(stderr,"Unable to create repository dir: %s\n",strerror(errno));
+        if (mkdir(path, 0700)) {
+            fprintf(stderr, "Unable to create repository dir: %s\n", strerror(errno));
             throw errno;
         }
     }
     return 0;
 }
 
-int Repository::checkPath(const char *root,const char *sub) {
+int Repository::checkPath(const char *root, const char *sub) {
     char *path;
-    
-    path=(char*)malloc(strlen(root)+strlen(sub));
-    
-    strcpy(path,root);
-    strcat(path,sub);
-    
+
+    path = (char*) malloc(strlen(root) + strlen(sub));
+
+    strcpy(path, root);
+    strcat(path, sub);
+
     int ec = checkPath(path);
-    
+
     free(path);
-    
+
     return ec;
 }
 
-int Repository::getAttributes(const char *path,Attributes *attr) {
-    if(stat(path,&attr->attr)) {
-        return -1;
+int Repository::getAttributes(const char *p, Attributes *attr) {
+    char *fsp;
+    int ec = 0;
+
+    fsp = prependFsPath(p);
+    log->notice("getAttributes %s\n", fsp);
+
+    if (stat(fsp, &attr->attr)) {
+        ec = -1;
     }
-    return 0;
+
+    free(fsp);
+
+    return ec;
+}
+
+repodir Repository::openDir(const char *p) {
+    char *fspath;
+    DIR *dirh;
+
+    fspath = prependFsPath(p);
+
+    if (fspath == NULL) {
+        errno = ENOMEM;
+        return NULL;
+    }
+
+    dirh = opendir(fspath);
+
+    free(fspath);
+
+    return (repodir) dirh;
+}
+
+char *Repository::readDir(repodir dir) {
+    DIR *dirh = (DIR *) dir;
+    struct dirent *entry;
+    char *name = NULL;
+
+    entry = readdir(dirh);
+
+    if (entry != NULL) {
+        name = strdup(entry->d_name);
+    }
+
+    return name;
+}
+
+void Repository::closeDir(repodir dir) {
+    closedir((DIR *) dir);
 }

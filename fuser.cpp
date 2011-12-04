@@ -40,6 +40,7 @@ int dfuser_main(const char *path) {
     static Logger *logger;
     
     repo=new Repository(path);
+    repo->setLogger(logger);
     
     dfuser=new FuseOps(repo,logger);
     

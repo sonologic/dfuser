@@ -22,4 +22,4 @@
 #
 
 fusermount -u ~/mnt/aux
-$1 -o repo=/home/gmc/.dfuser/repo ~/mnt/aux
+$1 -o repo=/home/gmc/.dfuser/repo,uid=502,gid=501 ~/mnt/aux
