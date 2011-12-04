@@ -39,7 +39,8 @@ OBJECTFILES= \
 	${OBJECTDIR}/fuser.o \
 	${OBJECTDIR}/dfuser.o \
 	${OBJECTDIR}/Repository.o \
-	${OBJECTDIR}/Logger.o
+	${OBJECTDIR}/Logger.o \
+	${OBJECTDIR}/FileHandle.o
 
 
 # C Compiler Flags
@@ -95,6 +96,11 @@ ${OBJECTDIR}/Logger.o: Logger.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.cc) -O2 `pkg-config --cflags fuse`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/Logger.o Logger.cpp
+
+${OBJECTDIR}/FileHandle.o: FileHandle.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -O2 `pkg-config --cflags fuse`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/FileHandle.o FileHandle.cpp
 
 # Subprojects
 .build-subprojects:

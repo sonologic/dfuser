@@ -24,6 +24,9 @@
 #ifndef FILEHANDLE_H
 #define	FILEHANDLE_H
 
+#include <sys/types.h>
+#include <stdio.h>
+
 class FileHandle {
 public:
     FileHandle();
@@ -33,7 +36,7 @@ public:
     int write(size_t ofs,size_t len,void *buf);
     int truncate();
 private:
-    uint64_t fh;        // fuse handle
+    int fh;        // fuse handle
     FILE *fp;           // pointer to underlying file
 };
 
