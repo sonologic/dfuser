@@ -21,9 +21,13 @@
  * 
  */
 
+#include <errno.h>
 #include "FileHandle.h"
 
-FileHandle::FileHandle() {
+FileHandle::FileHandle(Journal *journal,const char *path,const char *mode) {
+    fp=fopen(path,mode);
+    
+    if(fp==NULL) throw errno;
 }
 
 FileHandle::FileHandle(const FileHandle& orig) {

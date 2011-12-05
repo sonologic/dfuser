@@ -18,6 +18,8 @@
       <itemPath>FileHandle.h</itemPath>
       <itemPath>FuseOps.cpp</itemPath>
       <itemPath>FuseOps.h</itemPath>
+      <itemPath>Journal.cpp</itemPath>
+      <itemPath>Journal.h</itemPath>
       <itemPath>LICENSE</itemPath>
       <itemPath>Logger.cpp</itemPath>
       <itemPath>Logger.h</itemPath>

@@ -38,6 +38,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/Attributes.o \
 	${OBJECTDIR}/fuser.o \
 	${OBJECTDIR}/dfuser.o \
+	${OBJECTDIR}/Journal.o \
 	${OBJECTDIR}/Repository.o \
 	${OBJECTDIR}/Logger.o \
 	${OBJECTDIR}/FileHandle.o
@@ -90,6 +91,11 @@ ${OBJECTDIR}/dfuser.o: dfuser.c
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.c) -g -I. `pkg-config --cflags fuse`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/dfuser.o dfuser.c
+
+${OBJECTDIR}/Journal.o: Journal.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -g -I. `pkg-config --cflags fuse`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/Journal.o Journal.cpp
 
 ${OBJECTDIR}/Repository.o: Repository.cpp 
 	${MKDIR} -p ${OBJECTDIR}

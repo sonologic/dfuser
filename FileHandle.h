@@ -26,10 +26,11 @@
 
 #include <sys/types.h>
 #include <stdio.h>
+#include "Journal.h"
 
 class FileHandle {
 public:
-    FileHandle();
+    FileHandle(Journal *journal,const char *path,const char *mode);
     FileHandle(const FileHandle& orig);
     virtual ~FileHandle();
     int read(size_t ofs,size_t len,void *buf);
