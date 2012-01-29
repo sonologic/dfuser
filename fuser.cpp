@@ -97,10 +97,14 @@ int dfuser_open(const char *path, struct fuse_file_info *fi)
     return 0;
 }
 
+int dfuser_release(const char *path, struct fuse_file_info *fi) {
+    return dfuser->release(path,fi);
+}
+
 int dfuser_read(const char *path, char *buf, size_t size, off_t offset,
                       struct fuse_file_info *fi)
 {
-    return dfuser->read(path,buf,size,offset,fi);
+    return dfuser->readFile(path,buf,size,offset,fi);
     size_t len;
     (void) fi;
     if(strcmp(path, dfuser_path) != 0)
@@ -118,6 +122,25 @@ int dfuser_read(const char *path, char *buf, size_t size, off_t offset,
 }
 
 int dfuser_write(const char *path, const char *buf, size_t size, off_t offset, struct fuse_file_info *fi) {
-    return dfuser->write(path,buf,size,offset,fi);
+    return dfuser->writeFile(path,buf,size,offset,fi);
 }
 
+int dfuser_create(const char *path,mode_t mode,struct fuse_file_info *fi) {
+    return dfuser->create(path,mode,fi);
+}
+
+int dfuser_unlink(const char *path) {
+    return dfuser->unlink(path);
+}
+
+int dfuser_chmod(const char *path,mode_t mode) {
+    return dfuser->chmod(path,mode);
+}
+
+int dfuser_chown(const char *path,uid_t uid,gid_t gid) {
+    return dfuser->chown(path,uid,gid);
+}
+
+int dfuser_mkdir(const char *path,mode_t mode) {
+    return dfuser->mkdir(path,mode);
+}

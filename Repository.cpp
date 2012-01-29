@@ -25,6 +25,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <errno.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
@@ -108,12 +109,28 @@ int Repository::getAttributes(const char *p, Attributes *attr) {
     log->notice("getAttributes %s\n", fsp);
 
     if (stat(fsp, &attr->attr)) {
-        ec = -1;
+        ec = -errno;
     }
 
     free(fsp);
 
     return ec;
+}
+
+int Repository::createDir(const char *path,mode_t mode) {
+    int rv=0;
+    char *fspath=prependFsPath(path);
+    
+    log->notice("mkdir %s w/ mode %o\n",fspath,mode);
+    if(mkdir(fspath,mode)) {
+        log->notice("mkdir failed %s\n",strerror(errno));
+        rv=-errno;
+    } else if(chmod(fspath,mode)) {
+        log->notice("mkdir failed %s\n",strerror(errno));
+        rv=-errno;        
+    }
+    free(fspath);
+    return rv;
 }
 
 repodir Repository::openDir(const char *p) {
@@ -150,4 +167,154 @@ char *Repository::readDir(repodir dir) {
 
 void Repository::closeDir(repodir dir) {
     closedir((DIR *) dir);
+}
+
+int Repository::openFile(const char *path,int flags) {
+    char *rpath;
+    int rv;
+    int fd;
+    
+    rpath=prependFsPath(path);
+            
+    log->notice("open %s\n",rpath);
+    // @todo check permissions
+    fd=open(rpath,flags);
+    
+    free(rpath);
+    
+    if(fd>0) return fd;
+    
+    return -errno;
+}
+
+int Repository::writeFile(const char *path, const char *buf, size_t size,off_t offset,int fd) {
+    ssize_t totalWritten=0;
+    ssize_t written;
+    
+    log->notice("write %i bytes to %i, fd=%i\n",size,offset,fd);
+    if(lseek(fd,offset,SEEK_SET)==-1) {
+        log->notice("lseek failed: %s\n",strerror(errno));
+        return -errno;
+    }
+    while(totalWritten<size) {
+        written=write(fd,buf+totalWritten,size-totalWritten);
+        if(written==-1) {
+            log->notice("write error %s\n",strerror(errno));
+            return -errno;
+        }
+        totalWritten+=written;
+    }
+    return totalWritten;
+}
+
+int Repository::readFile(const char *path, char *buf, size_t size, off_t offset, int fd) {
+    ssize_t totalRead=0;
+    ssize_t bread;
+    
+    log->notice("read %i bytes from %i, fd=%i\n",size,offset,fd);
+    if(lseek(fd,offset,SEEK_SET)==-1) {
+        log->notice("lseek failed: %s\n",strerror(errno));
+        return -errno;
+    }
+    bread=-1;
+    while(totalRead<size) {
+        bread=read(fd,buf+totalRead,size-totalRead);
+        if(bread==-1) {
+            log->notice("read error %s\n",strerror(errno));
+            return -errno;
+        }
+        if(bread==0) {
+            log->notice("eof on fd %i\n",fd);
+            return totalRead;
+        }
+        totalRead+=bread;
+        log->notice("read %i bytes (%i total)\n",bread,totalRead);
+    }
+    return totalRead;
+    
+}
+
+int Repository::closeFile(const char *path,int fd) {
+    if(close(fd)) {
+        return -errno;
+    }
+    return 0;
+}
+
+int Repository::create(const char *path,mode_t mode) {
+    char *fspath=prependFsPath(path);
+    int rv;
+    int fd;
+    
+    if(S_ISDIR(mode)) {
+        log->notice("create: directory\n");
+        if(mkdir(fspath,mode&0x1ff)) {
+            log->notice("create: mkdir failed (%s)\n",strerror(errno));
+            rv=-errno;
+        } else if(chmod(fspath,mode)) {
+            log->notice("create: chmod failed (%s)\n",strerror(errno));
+            rv=-errno;
+        } else {
+            log->notice("create: ok\n");
+            rv=0;
+        }
+    } else if(S_ISREG(mode)) {
+        log->notice("create: file %s\n",fspath);
+        fd=open(fspath,O_RDWR|O_CREAT|O_EXCL);
+        log->notice("fd: %i\n",fd);
+                
+        if(fd==-1) {
+            log->notice("create: error opening file (%s)\n",strerror(errno));
+            rv=-errno;
+        } else if(chmod(fspath,mode)) {
+            log->notice("create: chmod failed (%s)\n",strerror(errno));
+            rv=-errno;
+        } else {
+            return fd;
+        }
+        rv=-ENOTSUP;
+    } else {
+        rv=-ENOTSUP;
+    }
+    free(fspath);
+    return rv;
+}
+
+int Repository::unlinkPath(const char *path) {
+    int rv=0;
+    char *fspath=prependFsPath(path);
+    
+    log->notice("unlink %s\n",fspath);
+    if(unlink(fspath)==-1) {
+        log->notice("unlink failed: %s\n",strerror(errno));
+        rv=-errno;
+    }
+    
+    return rv;
+}
+
+int Repository::chmodPath(const char *path,mode_t mode) {
+    int rv=0;
+    char *fspath=prependFsPath(path);
+    
+    log->notice("chmod %s to %o\n",fspath,mode);
+    if(chmod(fspath,mode)) {
+        log->notice("chmod failed: %s\n",strerror(errno));
+        rv=-errno;
+    }
+    free(fspath);
+    return rv;
+}
+
+int Repository::chownPath(const char *path,uid_t uid,gid_t gid) {
+    int rv=0;
+    char *fspath=prependFsPath(path);
+    
+    log->notice("chown %s to %i:%i\n",fspath,uid,gid);
+    if(chown(fspath,uid,gid)) {
+        log->notice("chown failed: %s\n",strerror(errno));
+        rv=-errno;
+    }
+    free(fspath);
+    return rv;
 }

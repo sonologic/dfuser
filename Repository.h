@@ -35,12 +35,23 @@ public:
     Repository(const Repository& orig);
     virtual ~Repository();
     int getAttributes(const char *path,Attributes *attr);
+    int createDir(const char *path,mode_t mode);
     int openPath(const char *path,int mode);
     int closePath(const char *path);
     repodir openDir(const char *path);
     char *readDir(repodir dir);
     void closeDir(repodir dir);
+    int create(const char *path,mode_t mode);
+    int openFile(const char *path,int flags);
+    int writeFile(const char *path, const char *buf, size_t size,
+        off_t offset,int fd);
+    int readFile(const char *path, char *buf, size_t size,
+        off_t offset, int fd);
+    int closeFile(const char *path,int fd);
     void setLogger(Logger *l);
+    int unlinkPath(const char *path);
+    int chmodPath(const char *path,mode_t mode);
+    int chownPath(const char *path,uid_t uid,gid_t gid);
 private:
     int checkPath(const char *path);
     int checkPath(const char *path,const char *sub);

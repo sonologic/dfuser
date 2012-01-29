@@ -24,9 +24,16 @@
 #ifndef DFUSER_H
 #define	DFUSER_H
 
+//#ifdef _x86_64_
+#define _FILE_OFFSET_BITS 64
+//#endif
+#define FUSE_USE_VERSION 25
+
 #include <fuse.h>
 #include <stdio.h>
+#ifdef __gnu_linux__
 #include <malloc.h>
+#endif
 #include "Repository.h"
 #include "Logger.h"
 
@@ -39,10 +46,16 @@ public:
     int readdir(const char *path, void *buf, fuse_fill_dir_t filler,
                          off_t offset, struct fuse_file_info *fi);
     int open(const char *path, struct fuse_file_info *fi);
-    int read(const char *path, char *buf, size_t size, off_t offset,
+    int release(const char *path, struct fuse_file_info *fi);
+    int readFile(const char *path, char *buf, size_t size, off_t offset,
                       struct fuse_file_info *fi);
-    int write(const char *path, const char *buf, size_t size,
+    int writeFile(const char *path, const char *buf, size_t size,
                         off_t offset, struct fuse_file_info *fi);
+    int create(const char *path,mode_t mode,struct fuse_file_info *fi);
+    int unlink(const char *path);
+    int chmod(const char *path,mode_t mode);
+    int chown(const char *path,uid_t uid,gid_t gid);
+    int mkdir(const char *path,mode_t mode);
 private:
     Repository *repo;
     Logger *log;

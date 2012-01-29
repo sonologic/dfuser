@@ -54,8 +54,14 @@ static struct fuse_operations dfuser_oper = {
     .getattr	= dfuser_getattr,
     .readdir	= dfuser_readdir,
     .open	= dfuser_open,
+    .release    = dfuser_release,
     .read	= dfuser_read,
     .write	= dfuser_write,
+    .create     = dfuser_create,
+    .unlink     = dfuser_unlink,
+    .chmod      = dfuser_chmod,
+    .chown      = dfuser_chown,
+    .mkdir      = dfuser_mkdir,
 };
 
 int main(int argc, char *argv[])
