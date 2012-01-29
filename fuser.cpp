@@ -29,6 +29,7 @@
 #include <dirent.h>
 #include "fuser.h"
 #include "FuseOps.h"
+#include "TransactionLog.h"
 
 static const char *dfuser_str = "Distributed FUSE replicator\n";
 static const char *dfuser_path = "/dfuser";
@@ -37,9 +38,10 @@ static FuseOps *dfuser;
 
 int dfuser_main(const char *path) {
     static Repository *repo;
-    static Logger *logger;
+    static Logger *logger;    
+    static TransactionLog *transactionLog;
     
-    repo=new Repository(path);
+    repo=new Repository(path,transactionLog);
     repo->setLogger(logger);
     
     dfuser=new FuseOps(repo,logger);

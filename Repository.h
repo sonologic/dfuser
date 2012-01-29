@@ -26,14 +26,20 @@
 
 #include "Attributes.h"
 #include "Logger.h"
+#include "TransactionLog.h"
 
 typedef void *repodir;
 
 class Repository {
 public:
-    Repository(const char * path /* = 0 */);
+    // meta ops
+    Repository(const char * path, TransactionLog *log);
     Repository(const Repository& orig);
     virtual ~Repository();
+    void setLogger(Logger *l);
+    // repo functions
+    int getHash(const char *path,char *hash);
+    // fs ops
     int getAttributes(const char *path,Attributes *attr);
     int createDir(const char *path,mode_t mode);
     int openPath(const char *path,int mode);
@@ -48,7 +54,6 @@ public:
     int readFile(const char *path, char *buf, size_t size,
         off_t offset, int fd);
     int closeFile(const char *path,int fd);
-    void setLogger(Logger *l);
     int unlinkPath(const char *path);
     int chmodPath(const char *path,mode_t mode);
     int chownPath(const char *path,uid_t uid,gid_t gid);
@@ -56,9 +61,12 @@ private:
     int checkPath(const char *path);
     int checkPath(const char *path,const char *sub);
     char *prependFsPath(const char *path);
+    Transaction *openTransaction(const char *path);
     //
     char *path;
     Logger *log;
+    TransactionLog *transactionLog;
+    
 };
 
 #endif	/* REPO_H */

@@ -31,13 +31,18 @@
 #include <stddef.h>
 #include <string.h>
 #include <dirent.h>
+#include <sys/mman.h>
+#include "sha1.h"
 #include "Repository.h"
+#include "TransactionLog.h"
 
-Repository::Repository(const char * p /* = 0 */) {
+Repository::Repository(const char * p, TransactionLog *log) {
     checkPath(p);
     checkPath(p, "/fs");
     checkPath(p, "/meta");
     path = strdup(p);
+    
+    transactionLog=log;
 }
 
 Repository::Repository(const Repository& orig) {
@@ -49,6 +54,35 @@ Repository::~Repository() {
 
 void Repository::setLogger(Logger *l) {
     log = l;
+}
+
+int Repository::getHash(const char *path,char *hash) {
+    int rv=0;
+    char *fspath=prependFsPath(path);
+    unsigned char rawhash[21];
+    int fd;
+    void *data;
+    off_t size;
+    
+    fd=open(fspath,O_RDONLY);
+    if(fd==-1) {
+        log->notice("error opening file for mmap: %s\n",strerror(errno));
+        rv=-errno;
+    } else {
+        size=lseek(fd,0,SEEK_END);
+        lseek(fd,0,SEEK_SET);
+        data=mmap(0,size,PROT_READ,MAP_SHARED,fd,0);
+        if(data==MAP_FAILED) {
+            log->notice("error mmap: %s\n",strerror(errno));
+            rv=-errno;
+        } else {
+            sha1::calc(data,size,rawhash); // 10 is the length of the string
+            sha1::toHexString(rawhash, hash);
+        }
+    }
+    
+    free(fspath);
+    return rv;
 }
 
 char *Repository::prependFsPath(const char *p) {
@@ -99,6 +133,10 @@ int Repository::checkPath(const char *root, const char *sub) {
     free(path);
 
     return ec;
+}
+
+Transaction *Repository::openTransaction(const char *path) {
+    return transactionLog->startTransaction(path);
 }
 
 int Repository::getAttributes(const char *p, Attributes *attr) {
